@@ -1,0 +1,61 @@
+@startuml
+
+class Carta {
+    - color : String
+    - numero : int
+    --
+    + Carta(color:String, numero:int)
+    + getColor() : String
+    + getNumero() : int
+    + toString() : String
+    + esJugableSobre(otra:Carta) : boolean
+}
+
+class Deck {
+    - cartas : ArrayList<Carta>
+    --
+    + Deck()
+    + robarCarta() : Carta
+}
+
+class Hand {
+    - cartas : ArrayList<Carta>
+    --
+    + Hand()
+    + agregarCarta(c:Carta) : void
+    + jugarCarta(i:int) : Carta
+    + mostrarMano() : void
+    + getCartas() : ArrayList<Carta>
+    + estaVacia() : boolean
+}
+
+class Game {
+    - mazo : Deck
+    - descarte : List<Carta>
+    - manoJugador : Hand
+    - manoBot : Hand
+    --
+    + Game()
+    + getTopCard() : Carta
+    + getManoJugador() : Hand
+    + getManoBot() : Hand
+    + jugarCarta(mano:Hand, indice:int) : void
+    + robarDeMazo(mano:Hand) : void
+}
+
+class Main {
+    + main(args:String[]) : void
+}
+
+' =========================
+' RELACIONES
+' =========================
+
+Deck "1" *-- "0..*" Carta
+Hand "1" *-- "0..*" Carta
+Game "1" *-- "1" Deck
+Game "1" *-- "2" Hand
+Game "1" *-- "1..*" Carta : descarte
+Main --> Game
+
+@enduml

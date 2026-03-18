@@ -23,4 +23,4 @@ El diseño del sistema se basa en clases principales:
 - `Game`: controla la lógica del juego
 - `Main`: punto de entrada del programa
 
-![Diagrama UML](uml_uno-card_sprint2.png)
+![Diagrama UML](docs/uml_uno-card_sprint2.png)

@@ -1,0 +1,67 @@
+@startuml
+title Diagrama de Clases - Juego tipo UNO (Sprint 2)
+
+class Carta {
+  - color : String
+  - numero : int {readOnly}
+  - tipo : String {readOnly}
+  
+  + Carta(color:String, numero:int, tipo:String)
+  + getColor() : String
+  + setColor(color:String) : void
+  + getNumero() : int
+  + getTipo() : String
+  + toString() : String
+  + esJugableSobre(otra:Carta) : boolean
+}
+
+class Deck {
+  - cartas : ArrayList<Carta>
+  
+  + Deck()
+  + robarCarta() : Carta
+  + agregarCarta(c:Carta) : void
+}
+
+class Hand {
+  - cartas : ArrayList<Carta>
+  
+  + Hand()
+  + agregarCarta(c:Carta) : void
+  + quitarDeMano(i:int) : Carta
+  + mostrarMano() : void
+  + getCartas() : ArrayList<Carta>
+  + estaVacia() : boolean
+}
+
+class Game {
+  - mazo : Deck
+  - descarte : List<Carta>
+  - manoJugador : Hand
+  - manoBot : Hand
+  
+  + Game()
+  + tieneEfectoEspecial(c:Carta) : boolean
+  + aplicarCastigo(carta:Carta, oponente:Hand) : void
+  + getTopCard() : Carta
+  + getManoJugador() : Hand
+  + getManoBot() : Hand
+  + jugarCarta(mano:Hand, i:int) : void
+  + robarDeMazo(mano:Hand) : void
+}
+
+class Main {
+  + main(args:String[]) : void
+}
+
+' Relaciones
+Game "1" *-- "1" Deck
+Game "1" *-- "2" Hand
+Game "1" -- "1..*" Carta : descarte
+
+Deck "1" *-- "0..*" Carta
+Hand "1" *-- "0..*" Carta
+
+Main --> Game
+
+@enduml

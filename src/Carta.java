@@ -1,22 +1,38 @@
 public class Carta {
-    private final String color; 
+    private String color; 
     private final int numero;   
+    private final String tipo; 
 
-    public Carta(String color, int numero) {
+    public Carta(String color, int numero, String tipo) {
         this.color = color;
         this.numero = numero;
+        this.tipo = tipo;
     }
 
     public String getColor() { return color; }
+    public void setColor(String color) { this.color = color; } 
     public int getNumero() { return numero; }
+    public String getTipo() { return tipo; }
 
     @Override
     public String toString() {
-        return "[" + color + " " + numero + "]";
+        String valor = (numero >= 0) ? String.valueOf(numero) : tipo;
+        return "[" + color + " " + valor + "]";
     }
 
-    // Método lógico para verificar si se puede tirar sobre otra
     public boolean esJugableSobre(Carta otra) {
-        return this.color.equals(otra.getColor()) || this.numero == otra.getNumero();
+        // Comodines negros se pueden tirar siempre
+        if (this.color.equals("Negro")) return true;
+        // Mismo color
+        if (this.color.equals(otra.getColor())) return true;
+        // Mismo número
+        if (this.tipo.equals("NUMERO") && otra.getTipo().equals("NUMERO")) {
+            if (this.numero == otra.getNumero()) return true;
+        }
+        // Mismo tipo (ej. MAS2 sobre MAS2)
+        if (!this.tipo.equals("NUMERO") && this.tipo.equals(otra.getTipo())) return true;
+
+        return false;
     }
 }
+

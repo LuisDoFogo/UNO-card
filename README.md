@@ -1,10 +1,14 @@
 # UNO-card
 El presente repositorio contiene el desarrollo de un sistema programado en lenguaje Java, organizado bajo una metodología de trabajo por sprints. Para garantizar una correcta gestión de versiones y un control adecuado de los cambios realizados durante el desarrollo, se implementó el uso de Git como sistema de control de versiones.
 
-## 📊 Diagrama UML
+---
+
+##  Diagrama UML
 ![Diagrama UML](docs/uml-UNO-card-diagrama.png)
 
-## Sprint 2
+---
+
+## 🟡 Sprint 2
 
 ### Cambios realizados
 
@@ -13,14 +17,36 @@ El presente repositorio contiene el desarrollo de un sistema programado en lengu
 - Se integraron cartas especiales (ej. +2, comodín, etc.)
 - Se actualizó el diagrama UML en la carpeta `docs/`
 
-## Actualizacion de Modelo UML
+---
+
+##  Actualización del modelo UML
 
 El diseño del sistema se basa en clases principales:
 
-- `Carta`: representa una carta con color, número y tipo
-- `Deck`: maneja el mazo de cartas
-- `Hand`: representa la mano de un jugador
-- `Game`: controla la lógica del juego
-- `Main`: punto de entrada del programa
+- `Carta`: representa una carta con color, número y tipo  
+- `Deck`: maneja el mazo de cartas  
+- `Hand`: representa la mano de un jugador  
+- `Game`: controla la lógica del juego  
+- `Main`: punto de entrada del programa  
 
+📊 UML Sprint 2:
 ![Diagrama UML](docs/uml_uno-card_sprint2.png)
+
+---
+
+## 🔴 Sprint 3 – Refactorización
+
+### Cambios realizados
+
+- Se reorganizó el flujo del juego centralizándolo en la clase `Game`
+- Se separaron responsabilidades en métodos específicos (`ejecutarTurnoJugador`, `ejecutarTurnoBot`, `procesarJugada`, etc.)
+- Se eliminó código duplicado entre la lógica del jugador y el bot
+- Se mejoró la estructura general del sistema aplicando principios de POO
+- Se optimizó la legibilidad y mantenibilidad del código
+- Se actualizaron los diagramas UML en la carpeta `docs/`
+
+---
+
+### 📊 UML actualizado (Sprint 3)
+
+![Diagrama UML](docs/uml_uno-card_sprint3.png)

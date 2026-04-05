@@ -1,0 +1,74 @@
+@startuml
+
+title UNO Card Game - UML (Sprint 3 Refactorizado)
+
+class Main {
+    +main(args: String[]): void
+}
+
+class Game {
+    -mazo: Deck
+    -descarte: List<Carta>
+    -manoJugador: Hand
+    -manoBot: Hand
+    -turnoDelJugador: boolean
+    -sc: Scanner
+
+    +Game()
+    +jugar(): void
+
+    -ejecutarTurnoJugador(): void
+    -ejecutarTurnoBot(): void
+    -procesarJugada(mano: Hand, idx: int, carta: Carta): void
+    -manejarReglaUno(esJugador: boolean): void
+    -elegirColor(c: Carta, esJugador: boolean): void
+    -finalizarPartida(): void
+
+    +tieneEfectoEspecial(c: Carta): boolean
+    +aplicarCastigo(carta: Carta, oponente: Hand): void
+    +robarDeMazo(mano: Hand): void
+    +getTopCard(): Carta
+}
+
+class Carta {
+    -color: String
+    -numero: int
+    -tipo: String
+
+    +Carta(color: String, numero: int, tipo: String)
+    +getColor(): String
+    +setColor(color: String): void
+    +getNumero(): int
+    +getTipo(): String
+    +toString(): String
+    +esJugableSobre(otra: Carta): boolean
+}
+
+class Deck {
+    -cartas: ArrayList<Carta>
+
+    +Deck()
+    +robarCarta(): Carta
+    +agregarCarta(c: Carta): void
+}
+
+class Hand {
+    -cartas: ArrayList<Carta>
+
+    +Hand()
+    +agregarCarta(c: Carta): void
+    +quitarDeMano(i: int): Carta
+    +mostrarMano(): void
+    +getCartas(): ArrayList<Carta>
+    +estaVacia(): boolean
+}
+
+' Relaciones
+Main --> Game : inicia
+Game --> Deck : usa
+Game --> Hand : usa
+Game --> Carta : usa
+Deck --> Carta : contiene
+Hand --> Carta : contiene
+
+@enduml

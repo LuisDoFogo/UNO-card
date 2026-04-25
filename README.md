@@ -50,3 +50,22 @@ El diseño del sistema se basa en clases principales:
 ### 📊 UML actualizado (Sprint 3)
 
 ![Diagrama UML](docs/uml_uno-card_sprint3.png)
+
+### 📊 UML actualizado con player (Sprint 3)
+
+![Diagrama UML](docs/uml_uno-card_sprintconplayer.png)
+
+### 📊 ¿Por qué se modificó el UML?
+
+El diagrama UML fue actualizado para reflejar la refactorización del sistema realizada en el Sprint 3. 
+
+El cambio principal fue la incorporación de la clase `Player`, la cual permite representar a cada jugador del sistema de manera independiente. Anteriormente, la lógica del juego estaba acoplada a variables específicas para un jugador y un bot, lo que limitaba la escalabilidad.
+
+Con esta modificación:
+
+- Se permite el manejo de múltiples jugadores (2–4)
+- Se reduce el acoplamiento en la clase `Game`
+- Se mejora la distribución de responsabilidades entre clases
+- Se obtiene un diseño más flexible y mantenible
+
+Además, la clase `Game` ahora gestiona una lista de jugadores en lugar de manejar manos individuales, lo que facilita la extensión del sistema hacia futuras mejoras. 

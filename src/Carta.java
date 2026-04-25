@@ -21,18 +21,23 @@ public class Carta {
     }
 
     public boolean esJugableSobre(Carta otra) {
-        // Comodines negros se pueden tirar siempre
+        // 1. Los comodines negros en la mano siempre son jugables
         if (this.color.equals("Negro")) return true;
-        // Mismo color
+
+        // 2. Similitud por color
         if (this.color.equals(otra.getColor())) return true;
-        // Mismo número
+
+        // 3. Similitud por número (solo si ambas son numéricas)
         if (this.tipo.equals("NUMERO") && otra.getTipo().equals("NUMERO")) {
             if (this.numero == otra.getNumero()) return true;
         }
-        // Mismo tipo (ej. MAS2 sobre MAS2)
-        if (!this.tipo.equals("NUMERO") && this.tipo.equals(otra.getTipo())) return true;
+
+        // 4. Similitud por tipo de carta especial (SALTO sobre SALTO, MAS2 sobre MAS2, etc.)
+        // Nota: Agregamos !tipo.equals("NUMERO") para no confundir con el caso anterior
+        if (!this.tipo.equals("NUMERO") && this.tipo.equals(otra.getTipo())) {
+            return true;
+        }
 
         return false;
     }
 }
-

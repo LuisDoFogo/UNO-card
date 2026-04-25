@@ -5,157 +5,168 @@ import java.util.Scanner;
 public class Game {
     private Deck mazo;
     private List<Carta> descarte;
-    private Hand manoJugador, manoBot;
-    private boolean turnoDelJugador;
+    private List<Player> jugadores;
+    private int indiceTurno;
+    private boolean sentidoHorario;
     private Scanner sc;
 
-    public Game() {
+    public Game(int numHumanos) {
         this.mazo = new Deck();
         this.descarte = new ArrayList<>();
-        this.manoJugador = new Hand();
-        this.manoBot = new Hand();
-        this.turnoDelJugador = true;
+        this.jugadores = new ArrayList<>();
         this.sc = new Scanner(System.in);
-        
-        // Repartir cartas iniciales
-        for (int i = 0; i < 7; i++) {
-            manoJugador.agregarCarta(mazo.robarCarta());
-            manoBot.agregarCarta(mazo.robarCarta());
+        this.indiceTurno = 0;
+        this.sentidoHorario = true;
+
+        for (int i = 1; i <= 4; i++) {
+            boolean esHumano = (i <= numHumanos);
+            String nombre = esHumano ? "Jugador " + i : "Bot " + i;
+            Player p = new Player(nombre, esHumano);
+            for (int j = 0; j < 7; j++) p.getMano().agregarCarta(mazo.robarCarta());
+            jugadores.add(p);
         }
-        
-        // Carta inicial legal (no negra)
+
         Carta inicio = mazo.robarCarta();
         while(inicio.getColor().equals("Negro")) {
             mazo.agregarCarta(inicio);
+            mazo.barajar();
             inicio = mazo.robarCarta();
         }
         descarte.add(inicio);
     }
 
-    // EL MOTOR DEL JUEGO
     public void jugar() {
-        while (!manoJugador.estaVacia() && !manoBot.estaVacia()) {
-            if (turnoDelJugador) {
-                ejecutarTurnoJugador();
-            } else {
-                ejecutarTurnoBot();
-            }
+        System.out.println("--- ¡COMIENZA EL JUEGO! ---");
+        while (!hayGanador()) {
+            Player pActual = jugadores.get(indiceTurno);
+            ejecutarTurno(pActual);
         }
-        finalizarPartida();
+        System.out.println("\n ¡PARTIDA FINALIZADA! ");
     }
 
-    private void ejecutarTurnoJugador() {
+    private void ejecutarTurno(Player p) {
         Carta mesa = getTopCard();
-        System.out.println("\n--- MESA: " + mesa + " | BOT: " + manoBot.getCartas().size() + " cartas ---");
-        manoJugador.mostrarMano();
-        System.out.print("\nTu turno (Indice, -1 robar): ");
-
-        if (!sc.hasNextInt()) {
-            System.out.println("Error: Solo números.");
-            sc.next();
-            return;
-        }
-
-        int idx = sc.nextInt();
-        if (idx == -1) {
-            robarDeMazo(manoJugador);
-            turnoDelJugador = false;
-        } else if (idx >= 0 && idx < manoJugador.getCartas().size()) {
-            Carta elegida = manoJugador.getCartas().get(idx);
-            if (elegida.esJugableSobre(mesa)) {
-                procesarJugada(manoJugador, idx, elegida);
-            } else {
-                System.out.println("Carta no válida.");
-            }
-        }
-    }
-
-    private void ejecutarTurnoBot() {
-        System.out.println("\nTurno del Bot...");
-        boolean botJugo = false;
-        for (int i = 0; i < manoBot.getCartas().size(); i++) {
-            Carta cb = manoBot.getCartas().get(i);
-            if (cb.esJugableSobre(getTopCard())) {
-                procesarJugada(manoBot, i, cb);
-                botJugo = true;
-                break;
-            }
-        }
-        if (!botJugo) {
-            System.out.println("El Bot roba carta.");
-            robarDeMazo(manoBot);
-            turnoDelJugador = true;
-        }
-    }
-
-    private void procesarJugada(Hand mano, int idx, Carta carta) {
-        descarte.add(mano.quitarDeMano(idx));
+        System.out.println("\n========================================");
+        System.out.println("TURNO DE: " + p.getNombre() + " | Mesa: " + mesa);
         
-        // Regla del UNO
-        if (mano.getCartas().size() == 1) {
-            manejarReglaUno(mano == manoJugador);
-        }
+        if (p.esHumano()) p.getMano().mostrarMano();
 
-        // Comodines
-        if (carta.getColor().equals("Negro")) {
-            elegirColor(carta, mano == manoJugador);
-        }
+        int idx = p.decidirJugada(mesa, sc);
 
-        // Castigos
-        Hand oponente = (mano == manoJugador) ? manoBot : manoJugador;
-        aplicarCastigo(carta, oponente);
-
-        // Turno especial
-        if (!tieneEfectoEspecial(carta)) {
-            turnoDelJugador = (mano != manoJugador);
+        if (idx == -1) {
+            System.out.println(p.getNombre() + " roba una carta.");
+            robarDeMazo(p.getMano());
+            avanzarTurno(1);
         } else {
-            System.out.println("¡Efecto especial! Repite turno.");
+            Carta elegida = p.getMano().getCartas().get(idx);
+            if (elegida.esJugableSobre(mesa)) {
+                procesarJugada(p, idx, elegida);
+            } else {
+                if (p.esHumano()) {
+                    System.out.println("====XX Movimiento inválido XX====. Intenta de nuevo.");
+                    ejecutarTurno(p); 
+                }
+            }
         }
     }
 
-    private void manejarReglaUno(boolean esJugador) {
-        if (esJugador) {
-            System.out.print("¡UNO! Escribe '1' rápido: ");
-            if (!sc.next().equals("1")) {
-                System.out.println("¡No dijiste UNO! +2 cartas.");
-                robarDeMazo(manoJugador); robarDeMazo(manoJugador);
+    private void procesarJugada(Player p, int idx, Carta carta) {
+        p.getMano().quitarDeMano(idx);
+        descarte.add(carta);
+        System.out.println(p.getNombre() + " jugó: " + carta);
+
+        // REGLA DEL UNO: Se activa si después de tirar le queda 1 carta
+        if (p.getMano().getCartas().size() == 1) {
+            manejarReglaUno(p);
+        }
+
+        if (carta.getColor().equals("Negro")) {
+            String nuevoColor = p.elegirNuevoColor(sc);
+            carta.setColor(nuevoColor);
+            System.out.println("El color cambió a: " + nuevoColor);
+        }
+
+        aplicarEfectos(carta);
+    }
+
+    private void manejarReglaUno(Player p) {
+        if (p.esHumano()) {
+            System.out.print("¡ÚLTIMA CARTA! Presiona '1' rápido para gritar UNO: ");
+            String entrada = sc.next();
+            if (!entrada.equals("1")) {
+                System.out.println("¡No dijiste UNO! +2 cartas de castigo.");
+                robarDeMazo(p.getMano());
+                robarDeMazo(p.getMano());
+            } else {
+                System.out.println("¡" + p.getNombre() + " grita: UNOOOOO! ");
             }
         } else {
-            System.out.println("¡El Bot grita: UNO!");
+            // Los bots siempre dicen UNO automáticamente
+            System.out.println("¡" + p.getNombre() + " grita: UNOOOOO! ");
         }
     }
 
-    private void elegirColor(Carta c, boolean esJugador) {
-        if (esJugador) {
-            System.out.print("Elige color (1:Rojo, 2:Azul, 3:Verde, 4:Amarillo): ");
-            int op = sc.nextInt();
-            String[] colores = {"Rojo", "Azul", "Verde", "Amarillo"};
-            c.setColor(colores[Math.max(0, Math.min(op - 1, 3))]);
-        } else {
-            c.setColor("Verde"); // Inteligencia simple del bot
+    private void aplicarEfectos(Carta c) {
+        String tipo = c.getTipo();
+        switch (tipo) {
+            case "REVERSA":
+                sentidoHorario = !sentidoHorario;
+                System.out.println("¡Sentido cambiado!");
+                avanzarTurno(1); 
+                break;
+            case "BLOQUEO":
+                System.out.println("¡Salto de turno!");
+                avanzarTurno(2); 
+                break;
+            case "MAS2":
+                avanzarTurno(1);
+                System.out.println(jugadores.get(indiceTurno).getNombre() + " roba 2 y pierde turno.");
+                robarDeMazo(jugadores.get(indiceTurno).getMano());
+                robarDeMazo(jugadores.get(indiceTurno).getMano());
+                avanzarTurno(1);
+                break;
+            case "MAS4":
+                avanzarTurno(1);
+                System.out.println(jugadores.get(indiceTurno).getNombre() + " roba 4 y pierde turno.");
+                for(int i=0; i<4; i++) robarDeMazo(jugadores.get(indiceTurno).getMano());
+                avanzarTurno(1);
+                break;
+            default:
+                avanzarTurno(1);
+                break;
         }
     }
 
-    private void finalizarPartida() {
-        if (manoJugador.estaVacia()) System.out.println("\n¡GANASTE!");
-        else System.out.println("\nGANÓ EL BOT.");
+    private void avanzarTurno(int pasos) {
+        int n = jugadores.size();
+        int sentido = sentidoHorario ? 1 : -1;
+        // Fórmula: (posicionActual + (pasos * direccion) + compensacionParaNoNegativos) % total
+        indiceTurno = (indiceTurno + (pasos * sentido) + (n * pasos)) % n;
     }
 
-    // --- MÉTODOS DE APOYO QUE YA TENÍAS ---
-    public boolean tieneEfectoEspecial(Carta c) {
-        String t = c.getTipo();
-        return t.equals("MAS2") || t.equals("MAS4") || t.equals("BLOQUEO") || t.equals("REVERSA");
-    }
-
-    public void aplicarCastigo(Carta carta, Hand oponente) {
-        int cant = (carta.getTipo().equals("MAS2")) ? 2 : (carta.getTipo().equals("MAS4")) ? 4 : 0;
-        for (int i = 0; i < cant; i++) robarDeMazo(oponente);
-        if (cant > 0) System.out.println("¡Castigo de +" + cant + " para el oponente!");
+    private boolean hayGanador() {
+        for (Player p : jugadores) {
+            if (p.getMano().estaVacia()) {
+                System.out.println("\n " + p.getNombre().toUpperCase() + " HA GANADO!");
+                return true;
+            }
+        }
+        return false;
     }
 
     public void robarDeMazo(Hand mano) {
+        if (mazo.getCartasRestantes() == 0) reabastecerMazo();
         Carta c = mazo.robarCarta();
         if (c != null) mano.agregarCarta(c);
+    }
+
+    private void reabastecerMazo() {
+        if (descarte.size() <= 1) return;
+        Carta actual = descarte.remove(descarte.size() - 1);
+        mazo.agregarCartas(descarte);
+        descarte.clear();
+        descarte.add(actual);
+        mazo.barajar();
     }
 
     public Carta getTopCard() { return descarte.get(descarte.size() - 1); }

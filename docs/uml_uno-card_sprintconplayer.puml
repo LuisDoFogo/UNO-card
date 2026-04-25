@@ -1,0 +1,81 @@
+@startuml
+
+title UNO Card Game - UML (Sprint 3 con Player)
+
+class Main {
+    +main(args: String[]): void
+}
+
+class Game {
+    -mazo: Deck
+    -descarte: List<Carta>
+    -jugadores: List<Player>
+    -turnoActual: int
+    -sc: Scanner
+
+    +Game()
+    +jugar(): void
+    -ejecutarTurnoJugador(jugador: Player): void
+    -ejecutarTurnoBot(bot: Player): void
+    -siguienteTurno(): void
+    -juegoTerminado(): boolean
+    +getTopCard(): Carta
+}
+
+class Player {
+    -nombre: String
+    -mano: Hand
+    -esBot: boolean
+
+    +Player(nombre: String, esBot: boolean)
+    +getNombre(): String
+    +getMano(): Hand
+    +esBot(): boolean
+    +agregarCarta(c: Carta): void
+    +quitarCarta(index: int): Carta
+    +tieneCartas(): boolean
+    +mostrarMano(): void
+}
+
+class Carta {
+    -color: String
+    -numero: int
+    -tipo: String
+
+    +Carta(color: String, numero: int, tipo: String)
+    +getColor(): String
+    +setColor(color: String): void
+    +getNumero(): int
+    +getTipo(): String
+    +toString(): String
+    +esJugableSobre(otra: Carta): boolean
+}
+
+class Deck {
+    -cartas: ArrayList<Carta>
+
+    +Deck()
+    +robarCarta(): Carta
+    +agregarCarta(c: Carta): void
+}
+
+class Hand {
+    -cartas: ArrayList<Carta>
+
+    +Hand()
+    +agregarCarta(c: Carta): void
+    +quitarDeMano(i: int): Carta
+    +mostrarMano(): void
+    +getCartas(): ArrayList<Carta>
+    +estaVacia(): boolean
+}
+
+Main --> Game
+Game --> Deck
+Game --> Player
+Game --> Carta
+Player --> Hand
+Hand --> Carta
+Deck --> Carta
+
+@enduml

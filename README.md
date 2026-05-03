@@ -69,3 +69,38 @@ Con esta modificación:
 - Se obtiene un diseño más flexible y mantenible
 
 Además, la clase `Game` ahora gestiona una lista de jugadores en lugar de manejar manos individuales, lo que facilita la extensión del sistema hacia futuras mejoras. 
+
+---
+
+### Refactorización Final
+
+### Cambios realizados
+
+* Se implementó la clase `Player` para representar jugadores humanos y bots de forma independiente
+* Se agregó la clase `TurnManager` para controlar el flujo de turnos y el sentido de juego (reversa)
+* Se agregó la clase `RuleEngine` para separar las reglas del juego y los efectos de cartas especiales
+* Se mejoró el sistema de penalización de la regla UNO
+* Se implementó el reabastecimiento automático del mazo cuando se terminan las cartas
+* Se optimizó la lógica de bots para seleccionar mejores jugadas
+* Se redujo el acoplamiento de la clase `Game`, distribuyendo responsabilidades entre nuevas clases
+* Se actualizó el diagrama UML en la carpeta `docs/`
+
+---
+
+## UML actualizado (Final)
+
+![Diagrama UML](docs/uml_final.png)
+
+### ¿Por qué se modificó el UML?
+
+El modelo UML fue actualizado para reflejar la refactorización completa del sistema realizada en el Sprint final.
+
+Anteriormente, gran parte de la lógica del juego estaba concentrada en la clase `Game`, lo que generaba alto acoplamiento y dificultaba la escalabilidad del sistema.
+
+Con la nueva estructura:
+
+* `Player` representa cada jugador individualmente
+* `TurnManager` controla el flujo y dirección de turnos
+* `RuleEngine` gestiona la validación de jugadas y efectos especiales
+
+Esto permitió un diseño más modular, mantenible y escalable, alineado con buenas prácticas de Programación Orientada a Objetos.

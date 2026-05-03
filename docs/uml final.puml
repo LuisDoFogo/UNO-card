@@ -1,0 +1,108 @@
+@startuml
+
+title UNO Card Game - UML Final Sprint 3
+
+class main {
+    +main(args: String[]): void
+}
+
+class Game {
+    -mazo: Deck
+    -descarte: List<Carta>
+    -jugadores: List<Player>
+    -turnManager: TurnManager
+    -sc: Scanner
+
+    +Game(numHumanos: int)
+    +jugar(): void
+    +darCartasAPlayerActual(cant: int): void
+    -robarCarta(p: Player): void
+    +getTopCard(): Carta
+}
+
+class Player {
+    -nombre: String
+    -mano: Hand
+    -esHumano: boolean
+    -gritoUno: boolean
+
+    +Player(nombre: String, esHumano: boolean)
+    +decidirJugada(mesa: Carta, sc: Scanner): int
+    +verificarUno(sc: Scanner): void
+    +elegirColor(sc: Scanner): String
+    +haGritadoUno(): boolean
+    +getNombre(): String
+    +getMano(): Hand
+    +esHumano(): boolean
+}
+
+class TurnManager {
+    -indiceActual: int
+    -sentidoHorario: boolean
+    -total: int
+
+    +TurnManager(total: int)
+    +getIndiceActual(): int
+    +cambiarDireccion(): void
+    +avanzar(): void
+}
+
+class RuleEngine {
+    +esJugadaValida(jugada: Carta, mesa: Carta): boolean
+    +aplicarEfecto(carta: Carta, game: Game, turnManager: TurnManager): void
+}
+
+class Carta {
+    -color: String
+    -numero: int
+    -tipo: String
+
+    +Carta(color: String, numero: int, tipo: String)
+    +getColor(): String
+    +setColor(color: String): void
+    +getNumero(): int
+    +getTipo(): String
+    +esJugableSobre(otra: Carta): boolean
+    +toString(): String
+}
+
+class Deck {
+    -cartas: ArrayList<Carta>
+
+    +Deck()
+    +barajar(): void
+    +robarCarta(): Carta
+    +getCartasRestantes(): int
+    +agregarCartas(nuevas: List<Carta>): void
+}
+
+class Hand {
+    -cartas: ArrayList<Carta>
+
+    +agregarCarta(c: Carta): void
+    +quitarDeMano(i: int): Carta
+    +getCartas(): ArrayList<Carta>
+    +estaVacia(): boolean
+    +mostrarMano(): void
+    -getColorANSI(c: Carta): String
+}
+
+' Relaciones
+main --> Game : inicia
+Game --> Deck : usa
+Game --> Player : gestiona
+Game --> TurnManager : controla
+Game --> Carta : usa
+Game --> RuleEngine : aplica reglas
+
+Player --> Hand : contiene
+Player --> Carta : juega
+
+Hand --> Carta : contiene
+Deck --> Carta : contiene
+
+RuleEngine --> Carta : valida
+RuleEngine --> Game : aplica efectos
+RuleEngine --> TurnManager : modifica turnos
+
+@enduml

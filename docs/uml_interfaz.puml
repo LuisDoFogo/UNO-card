@@ -1,0 +1,205 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+' =========================
+' MODELO
+' =========================
+
+class Carta {
+    -color : String
+    -numero : int
+    -tipo : String
+
+    +Carta(color : String, numero : int, tipo : String)
+
+    +getColor() : String
+    +setColor(color : String) : void
+    +getNumero() : int
+    +getTipo() : String
+
+    +esJugableSobre(otra : Carta) : boolean
+    +toString() : String
+}
+
+class Deck {
+    -cartas : ArrayList<Carta>
+
+    +Deck()
+    +barajar() : void
+    +robarCarta() : Carta
+    +getCartasRestantes() : int
+    +agregarCartas(nuevas : List<Carta>) : void
+}
+
+class Hand {
+    -cartas : ArrayList<Carta>
+
+    +agregarCarta(c : Carta) : void
+    +quitarDeMano(i : int) : Carta
+    +getCartas() : ArrayList<Carta>
+    +estaVacia() : boolean
+    +mostrarMano() : void
+}
+
+class Player {
+    -nombre : String
+    -mano : Hand
+    -esHumano : boolean
+    -gritoUno : boolean
+
+    +Player(nombre : String, esHumano : boolean)
+
+    +decidirJugada(mesa : Carta, sc : Scanner) : int
+    +verificarUno(sc : Scanner) : void
+    +elegirColor(sc : Scanner) : String
+
+    +haGritadoUno() : boolean
+    +getNombre() : String
+    +getMano() : Hand
+    +esHumano() : boolean
+}
+
+' =========================
+' LOGICA
+' =========================
+
+class Game {
+    -mazo : Deck
+    -descarte : List<Carta>
+    -jugadores : List<Player>
+    -turnManager : TurnManager
+
+    +Game(nombreHumano : String, nombresBots : String[])
+
+    +darCartasAPlayerActual(cant : int) : void
+    +robarCarta(p : Player) : void
+
+    +getTopCard() : Carta
+    +getDescarte() : List<Carta>
+    +getJugadores() : List<Player>
+    +getTurnManager() : TurnManager
+    +getMazo() : Deck
+}
+
+class RuleEngine {
+    +esJugadaValida(jugada : Carta, mesa : Carta) : boolean
+    +aplicarEfecto(carta : Carta, game : Game, turnManager : TurnManager) : void
+}
+
+class TurnManager {
+    -indiceActual : int
+    -sentidoHorario : boolean
+    -total : int
+
+    +TurnManager(total : int)
+
+    +getIndiceActual() : int
+    +cambiarDireccion() : void
+    +avanzar() : void
+}
+
+' =========================
+' GUI
+' =========================
+
+class Main {
+    +main(args : String[]) : void
+}
+
+class VentanaPrincipal {
+    +VentanaPrincipal()
+
+    +cambiarAMesa(nombreHumano : String, nombresBots : String[]) : void
+}
+
+class MenuPanel {
+    -ventana : VentanaPrincipal
+    -encabezado : Image
+    -hoveredButton : JButton
+
+    +MenuPanel(ventana : VentanaPrincipal)
+
+    -crearBotonNavegacion(texto : String, color : Color) : JButton
+    -pedirNombres(numBots : int) : void
+
+    +paintComponent(g : Graphics) : void
+}
+
+class MesaPanel {
+    -game : Game
+    -txtHistorial : JTextArea
+    -unoPresionado : boolean
+    -sentidoHorario : boolean
+
+    +MesaPanel(game : Game)
+
+    -registrarJugada(jugador : String, c : Carta, accion : String) : void
+    -procesarTurnosBots() : void
+    -hayGanador() : boolean
+    -revisarFinDeJuego() : void
+    -cargarImagenCarta(c : Carta) : Image
+
+    +paintComponent(g : Graphics) : void
+}
+
+' =========================
+' SERVICIOS
+' =========================
+
+class GestorSonido {
+    -instancia : GestorSonido
+    -clipFondo : Clip
+    -clipMenu : Clip
+
+    +getInstance() : GestorSonido
+    +reproducirEfecto(nombre : String) : void
+    +iniciarMusica(esMenu : boolean) : void
+    +pararMusica() : void
+}
+
+' =========================
+' HERENCIA SWING
+' =========================
+
+MenuPanel --|> JPanel
+MesaPanel --|> JPanel
+VentanaPrincipal --|> JFrame
+
+' =========================
+' COMPOSICION
+' =========================
+
+Deck *-- Carta
+Hand *-- Carta
+Player *-- Hand
+
+' =========================
+' RELACIONES
+' =========================
+
+Game --> Deck
+Game --> Player
+Game --> TurnManager
+Game --> Carta
+
+RuleEngine --> Carta
+RuleEngine --> Game
+RuleEngine --> TurnManager
+
+Player --> Carta
+
+Main --> VentanaPrincipal
+
+VentanaPrincipal --> MenuPanel
+VentanaPrincipal --> MesaPanel
+VentanaPrincipal --> Game
+
+MenuPanel --> VentanaPrincipal
+MenuPanel --> GestorSonido
+
+MesaPanel --> Game
+MesaPanel --> RuleEngine
+MesaPanel --> GestorSonido
+MesaPanel --> VentanaPrincipal
+
+@enduml

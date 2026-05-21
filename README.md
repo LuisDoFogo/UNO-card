@@ -104,3 +104,43 @@ Con la nueva estructura:
 * `RuleEngine` gestiona la validación de jugadas y efectos especiales
 
 Esto permitió un diseño más modular, mantenible y escalable, alineado con buenas prácticas de Programación Orientada a Objetos.
+
+---
+
+### Sprint Final – Implementación de Interfaz Gráfica
+
+### Cambios realizados
+
+* Se implementó una interfaz gráfica completa utilizando Java Swing  
+* Se agregó la clase `VentanaPrincipal` para administrar las pantallas del sistema  
+* Se desarrolló `MenuPanel` como menú principal interactivo del juego  
+* Se implementó `MesaPanel` para representar visualmente la mesa de juego y las cartas  
+* Se integró un sistema gráfico dinámico para mostrar jugadores, turnos y cartas en tiempo real  
+* Se añadieron efectos visuales y retroalimentación interactiva para mejorar la experiencia del usuario  
+* Se implementó un sistema de historial de jugadas dentro de la interfaz  
+* Se agregaron botones interactivos para robar cartas, gritar UNO y acceder al menú de configuración  
+* Se integró música de fondo y efectos de sonido mediante la clase `GestorSonido`  
+* Se añadieron animaciones visuales simples y cambios de color según el estado del juego  
+* Se adaptó la lógica existente del proyecto para trabajar correctamente con la interfaz gráfica  
+* Se actualizaron los diagramas UML incluyendo las nuevas clases visuales del sistema  
+
+---
+
+## UML actualizado con Interfaz Gráfica
+
+![Diagrama UML](docs/uml_interfaz.png)
+
+### ¿Por qué se modificó el UML?
+
+El modelo UML fue actualizado nuevamente para reflejar la incorporación de la capa gráfica del sistema.
+
+Anteriormente, el proyecto funcionaba únicamente mediante consola, enfocándose principalmente en la lógica del juego. Con la implementación de la interfaz gráfica, el sistema evolucionó hacia una arquitectura más completa e interactiva.
+
+Con esta actualización:
+
+* `VentanaPrincipal` administra el flujo de ventanas y pantallas  
+* `MenuPanel` controla la navegación inicial del juego  
+* `MesaPanel` representa visualmente la partida y la interacción del usuario  
+* `GestorSonido` administra música y efectos de sonido del sistema  
+
+La incorporación de estas clases permitió separar la lógica visual de la lógica del juego, mejorando la organización del proyecto, la experiencia del usuario y la mantenibilidad del código.
